@@ -10,17 +10,14 @@ var optimist = require("optimist")
 	.describe('config', 'Path to the configuration file.')
 	.alias('config', 'c')
 
-	.boolean('http')
-	.default('http', false)
-	.describe('http', 'Start the HTTP server and web interface.')
-	.alias('http', 'H')
-
 	.boolean('daemon')
 	.default('daemon', false)
 	.describe('daemon', 'Start the process as a daemon. Only useful if the HTTP server is enabled as well.')
 	.alias('daemon', 'd');
 
 var argv = optimist.argv;
+
+var defaults = require("./defaults.config.js");
 
 /**
  * Show help if requested.
@@ -42,6 +39,11 @@ if(argv.config !== undefined) {
 	nconf.file(argv.config);
 }
 
+nconf.defaults(defaults);
+
+/**
+ * Start up the server
+ */
 console.info("Starting LFX...");
 
 /**
