@@ -60,8 +60,6 @@ if(argv.daemon) {
 	console.info("Forking into background process.");
 
 	require('daemon')();
-
-	console.info("LFX now running as a daemon with process ID ", process.pid);
 }
 
 process.title = 'lfx-daemon';
