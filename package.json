@@ -16,6 +16,7 @@
 		"express": "~3.4.0",
 		"socket.io": "0.9.x",
 		"optimist": "0.6.x",
+		"daemon": "1.1.x",
 
 		"lfx-light-manager": "git://github.com/andrewmunsell/lfx-light-manager.git#develop",
 		"lfx-spi-connector": "git://github.com/andrewmunsell/lfx-spi-connector.git#develop"
