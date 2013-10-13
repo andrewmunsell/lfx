@@ -46,6 +46,11 @@ nconf.defaults(defaults);
  */
 console.info("Starting LFX...");
 
+if(nconf.get('tcp.server')) {
+	var tcp = new (require('./tcp'))(nconf, {});
+	tcp.start();
+}
+
 /**
  * Fork the process and exit this one if a daemon was requested.
  */
