@@ -31,6 +31,17 @@ if(argv.help) {
 	process.exit(0);
 }
 
+/**
+ * Parse the command line flags and configuration items
+ */
+var nconf = require('nconf');
+
+nconf.argv();
+
+if(argv.config !== undefined) {
+	nconf.file(argv.config);
+}
+
 console.info("Starting LFX...");
 
 /**
