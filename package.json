@@ -9,6 +9,8 @@
 
 	"dependencies": {
 		"express": "~3.4.0",
-		"socket.io": "0.9.x"
+		"socket.io": "0.9.x",
+
+		"lfx-spi-connector": "git://github.com/andrewmunsell/lfx-spi-connector.git#develop"
 	}
 }
