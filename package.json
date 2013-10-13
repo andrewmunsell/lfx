@@ -2,7 +2,7 @@
 	"name": "lfx",
 	"version": "2.0.0",
 
-	"description": "Interface and server for managing LEDs.",
+	"description": "Interface and server for managing and controlling LEDs.",
 	"author": "Andrew Munsell <andrew@wizardapps.net>",
 
 	"main": "./src/index.js",
