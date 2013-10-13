@@ -44,6 +44,8 @@ nconf.defaults(defaults);
 /**
  * Start up the server
  */
+process.title = 'lfx';
+
 console.info("Starting LFX...");
 
 if(nconf.get('tcp.server')) {
@@ -61,3 +63,5 @@ if(argv.daemon) {
 
 	console.info("LFX now running as a daemon with process ID ", process.pid);
 }
+
+process.title = 'lfx-daemon';
