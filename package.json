@@ -5,5 +5,10 @@
 	"description": "Interface and server for managing LEDs.",
 	"author": "Andrew Munsell <andrew@wizardapps.net>",
 
-	"main": "./src/index.js"
+	"main": "./src/index.js",
+
+	"dependencies": {
+		"express": "~3.4.0",
+		"socket.io": "0.9.x"
+	}
 }
