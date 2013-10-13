@@ -22,8 +22,24 @@ var optimist = require("optimist")
 
 var argv = optimist.argv;
 
+/**
+ * Show help if requested.
+ */
 if(argv.help) {
 	optimist.showHelp();
 
 	process.exit(0);
+}
+
+console.info("Starting LFX...");
+
+/**
+ * Fork the process and exit this one if a daemon was requested.
+ */
+if(argv.daemon) {
+	console.info("Forking into background process.");
+
+	require('daemon')();
+
+	console.info("LFX now running as a daemon with process ID ", process.pid);
 }
