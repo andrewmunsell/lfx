@@ -48,6 +48,7 @@ process.title = 'lfx';
 
 console.info("Starting LFX...");
 
+// Start up the TCP server if needed
 if(nconf.get('tcp.server')) {
 	var tcp = new (require('./tcp'))(nconf, {});
 	tcp.start();
