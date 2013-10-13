@@ -7,6 +7,11 @@
 
 	"main": "./src/index.js",
 
+	"repository": {
+		"type": "git",
+		"url": "http://github.com/andrewmunsell/lfx"
+	},
+
 	"dependencies": {
 		"express": "~3.4.0",
 		"socket.io": "0.9.x",
