@@ -76,6 +76,6 @@ if(argv.daemon) {
 	require('daemon')();
 }
 
-process.title = 'lfx-daemon';
+process.title = 'lfxd';
 
 animation.start();
