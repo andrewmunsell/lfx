@@ -22,7 +22,7 @@ function Server(nconf, manager) {
  */
 var _functions = {
 	set: function(offset, r, g, b) {
-		self.manager.set(offset, r, g, b);
+		self._manager.set(offset, r, g, b);
 	}
 };
 
