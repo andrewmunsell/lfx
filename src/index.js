@@ -63,7 +63,7 @@ animation.on("tick", function(){
 
 // Start up the TCP server if needed
 if(nconf.get('tcp.server')) {
-	var tcp = new (require('./tcp'))(nconf, {});
+	var tcp = new (require('./tcp'))(nconf, manager);
 	tcp.start();
 }
 
