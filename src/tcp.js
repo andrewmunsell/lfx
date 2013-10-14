@@ -1,5 +1,7 @@
 var jayson = require('jayson');
 
+var self;
+
 /**
  * JSON-RPC 2.0 compliant server that accepts commands for the light manager
  * over a TCP socket.
@@ -10,6 +12,8 @@ function Server(nconf, manager) {
 	this._server = null;
 	this._nconf = nconf;
 	this._manager = manager;
+
+	self = this;
 }
 
 /**
@@ -18,7 +22,7 @@ function Server(nconf, manager) {
  */
 var _functions = {
 	set: function(offset, r, g, b) {
-		this.manager.set(offset, r, g, b);
+		self.manager.set(offset, r, g, b);
 	}
 };
 
