@@ -1,3 +1,9 @@
+/**
+ * @author Andrew Munsell <andrew@wizardapps.net>
+ * @copyright 2013 Andrew Munsell
+ * @license http://www.gnu.org/licenses/ GNU GPLv3
+ */
+
 var optimist = require("optimist")
 
 	.usage('Run the LFX script.\nUsage: $0')
