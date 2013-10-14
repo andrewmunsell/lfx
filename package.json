@@ -19,6 +19,7 @@
 		"nconf": "0.6.x",
 		"daemon": "1.1.x",
 		"jayson": "1.0.x",
+		"animation": "0.1.x",
 
 		"lfx-light-manager": "git://github.com/andrewmunsell/lfx-light-manager.git#develop",
 		"lfx-spi-connector": "git://github.com/andrewmunsell/lfx-spi-connector.git#develop"

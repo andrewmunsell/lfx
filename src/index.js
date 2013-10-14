@@ -17,7 +17,9 @@ var optimist = require("optimist")
 
 var argv = optimist.argv;
 
-var defaults = require("./defaults.config.js");
+var defaults 	= require("./defaults.config.js"),
+	Manager 	= require("lfx-light-manager"),
+	Animation 	= (require("animation")).Animation;
 
 /**
  * Show help if requested.
@@ -48,6 +50,17 @@ process.title = 'lfx';
 
 console.info("Starting LFX...");
 
+var manager = new Manager({
+	"leds": nconf.get("leds")
+});
+
+var animation = new Animation({
+	frame: "41ms"
+});
+animation.on("tick", function(){
+	manager.render.call(manager);
+});
+
 // Start up the TCP server if needed
 if(nconf.get('tcp.server')) {
 	var tcp = new (require('./tcp'))(nconf, {});
@@ -64,3 +77,5 @@ if(argv.daemon) {
 }
 
 process.title = 'lfx-daemon';
+
+animation.start();
