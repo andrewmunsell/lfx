@@ -36,7 +36,7 @@ Server.prototype.start = function() {
 	console.info("Running JSON-RPC 2.0 server on TCP port", this._nconf.get('tcp.port'));
 
 	this._server = jayson.server(_functions);
-	this._server.tcp().listen(this._nconf.get('tcp.port'));
+	this._server.tcp().listen(this._nconf.get('tcp.port'), this._nconf.get('tcp.address'));
 }
 
 module.exports = Server;
