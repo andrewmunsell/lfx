@@ -75,6 +75,21 @@ The configuration file may be specified with the `-config, -c` command line flag
 node src/index.js -c config.json
 ```
 
+## Connectors
+
+LFX is designed to support management of LEDs over multiple types of interfaces. Initially, LFX has support for SPI connected LEDs, such as the WS2801 strand [sold by Adafruit](http://www.adafruit.com/products/738).
+
+Potential future connectors include:
+
+- Serial (to facilitate PC/Mac-Arduino-LED connections, for example)
+- TCP/UDP socket
+
+### Specification
+
+Each connector must take a configuration object in its constructor. The contents of this object are taken from the configuration file loaded by LFX.
+
+Additionally, the connector must implement a single method-- `render(Buffer)`. The render method accepts a Buffer of length `3 * LEDs`. The buffer passed into the render method is guaranteed to be a length divisible by 3 and contain bytes representing RGB values, with each triplet representing a single LED's state.
+
 ## JSON-RPC API
 
 The API is JSON-RPC 2.0 compliant and has several methods for managing the raw pixel data, as well as animations. It can be accessed over a TCP socket or over HTTP.
