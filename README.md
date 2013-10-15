@@ -54,6 +54,12 @@ A sample configuration file is below with the default values.
 {
 	"leds": 25,
 	
+	"connector": "spi",
+	"connector.options": {
+		"device": "/dev/spidev0.0",
+		"mode": 0
+	},
+	
 	"http.server": false,
 	"http.port": 80,
 
