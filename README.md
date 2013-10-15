@@ -101,7 +101,7 @@ Animations must be packaged as NPM modules that conform to the following specifi
 **Parameters**
 
 - `Object` - The object will contain options for the animation to initialize with. The options object will always contain a `length` property that indicates the number of LEDs the animation is responsible for, as well as an `offset` property indicating the starting index of the LEDs to manage.
-- `LFXLightManager (Object)` - The manager of this animation. This reference is used to register for message notifications.
+- `LFXLightManager (Object)` - The [LFX light manager](https://github.com/andrewmunsell/lfx-light-manager) of this animation. This reference is used to register for message notifications.
 
 The constructor must accept an object containing options for the animation.
 
