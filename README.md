@@ -8,7 +8,7 @@ LFX is distributed under the GNU GPLv3 license.
 
 ## Installation
 
-LFX requires Node.js v0.10.20 or higher. 
+LFX requires Node.js v0.10.20 or higher. Once this repository has been cloned onto the computer to run the server software, simply run `npm install` to download and compile all dependencies.
 
 ### Raspberry Pi
 
