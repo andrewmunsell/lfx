@@ -2,6 +2,8 @@
 
 System for managing and controlling strands of LEDs. The system is controllable over a network with a TCP/HTTP JSON-RPC API as well as a HTTP web interface.
 
+LFX is distributed under the GNU GPLv3 license.
+
 *Note: The following API documentation is under development and is not complete. Additionally, not all API functionality listed here is functional.*
 
 ## Installation
