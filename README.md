@@ -134,7 +134,7 @@ Retrieves the animation specified, including any configuration options.
 
 **Parameters**
 
-- `id` - Identifier of the animation to retrieve information for.
+- `id` - Identifier of the animation to delete.
 
 Deletes the specified animation. This will not clear any LEDs modified by the animation.
 
