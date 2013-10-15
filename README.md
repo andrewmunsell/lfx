@@ -210,3 +210,60 @@ Deletes the specified animation. This will not clear any LEDs modified by the an
 *None*
 
 Deletes all animations. This will not clear any LEDs modified by the animations.
+
+### getAvailableAnimations
+
+**Parameters**
+
+*None*
+
+Retrieves an array of available animations.
+
+**Sample response**
+
+```
+[
+	{
+		"id": "color-fill",
+		"name": "Color Fill",
+		
+		"options": {
+			"color": {
+				"type": "color",
+				"name": "Color"
+			}
+		}
+	},
+	
+	{
+		"id": "music-visualizer",
+		"name": "Music Visualizer",
+		
+		"options": {
+			"excitement": {
+				"type": "ranger",
+				"min": 0,
+				"max": 1,
+				"step": 0.1,
+				"name": "Excitement"
+			}
+		},
+		
+		"notifications": [
+			"beat",
+			"kick",
+			"snare"
+		]
+	}
+]
+```
+
+### notify
+
+**Parameters**
+
+- `animation` - ID of the animation to receive the notification
+- `name` - String containing the name of the notification
+- `payload` - Payload of a variable type for the  (Number, String, Array, or Object)
+
+Notifies an animation of an event. For example, the music vizualizer may use the notification service to receive beat, kick, and snare events from another host running audio processing software.
