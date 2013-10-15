@@ -69,7 +69,7 @@ A sample configuration file is below with the default values.
 }
 ```
 
-The configuration file may be specified with the `-config, -c` command line flag:
+The configuration file may be specified with the `-config` command line flag:
 
 ```
 node src/index.js -c config.json
