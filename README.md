@@ -98,6 +98,39 @@ To use the TCP API, connect to the IP address or hostname and port of the LFX se
 
 To use the HTTP API, a `POST` request must be sent to the API endpoint, `/api`, with the body containing a valid JSON-RPC command.
 
+Additionally, a WebSocket API is also available. Each message sent to the WebSocket endpoint is considered a separate JSON-RPC command. Currently this API is used for the internal web interface and should not be used by other client applications. Instead, 3rd party clients should use the TCP or HTTP APIs.
+
+In general, the API will respond with a "result" code of 0 with no other data. A 0 code indicates success. For example:
+
+```
+{
+	"jsonrpc": "2.0",
+	"result": 0,
+	"id": "2fde31ad"
+}
+```
+
+Alternatively, an error may be returned according to the JSON-RPC specification:
+
+```
+{
+	"jsonrpc": "2.0",
+	"error": {
+		"code": -32602,
+		"message": "LED index out of bounds"
+	},
+	"id": "3fed39c0"
+}
+```
+
+#### Error Codes
+
+Possible error codes returned by the API include the existing JSON-RPC specification error codes, as well as the following:
+
+##### -32001 - LED index out of bounds
+
+The specified offset for the called method was invalid due to being out of the bounds of the LEDs. For example, this error will occur when the index specified is less than 0 or greater than or equal to the number of LEDs.
+
 ### set
 
 **Parameters**
