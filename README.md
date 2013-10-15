@@ -130,6 +130,15 @@ Retrieve a list of all animations currently active on the LED strand.
 
 Retrieves the animation specified, including any configuration options.
 
+### moveAnimation
+
+**Parameters**
+
+- `id` - Identifier of the animation to move.
+- `index` - Index to move the animation to. All subsequent animations will be shifted down in the render order.
+
+Move the specified animation to a new position in the render order.
+
 ### deleteAnimation
 
 **Parameters**
