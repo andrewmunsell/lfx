@@ -105,14 +105,13 @@ Animations must be packaged as NPM modules that conform to the following specifi
 
 The constructor must accept an object containing options for the animation.
 
-### render(Buffer, Number)
+### render(Number)
 
 **Parameters**
 
-- `Buffer` - Buffer to render the animation from onto. This object must be modified.
 - `Number` - Delta time (change in time) since the last render call in milliseconds
 
-The render method must render the current animation onto the `Buffer` passed to it. The `Buffer` passed must be modified and no object or variable may be returned.
+The render method must render the current animation onto the LFX Light Manager instance passed to it during initialization. See the documentation for the LFX Light Manager for more information on the methods available to the animations.
 
 ### setOptions(Object)
 
