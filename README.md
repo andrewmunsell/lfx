@@ -90,6 +90,38 @@ Each connector must take a configuration object in its constructor. The contents
 
 Additionally, the connector must implement a single method-- `render(Buffer)`. The render method accepts a Buffer of length `3 * LEDs`. The buffer passed into the render method is guaranteed to be a length divisible by 3 and contain bytes representing RGB values, with each triplet representing a single LED's state.
 
+## Animations
+
+Animations are modules designed to allow for continuous update of LEDs and display of patterns. Animations may be configured for the entire strand of LEDs or a subset. Each animation must not require a minimum or maximum strand length, as they may be applied for a single LED or an entire strand of hundreds.
+
+Animations must be packaged as NPM modules that conform to the following specification. There are several methods each animation must implement:
+
+### Animation(Object, LFXLightManager)
+
+**Parameters**
+
+- `Object` - The object will contain options for the animation to initialize with. The options object will always contain a `length` property that indicates the number of LEDs the animation is responsible for, as well as an `offset` property indicating the starting index of the LEDs to manage.
+- `LFXLightManager (Object)` - The manager of this animation. This reference is used to register for message notifications.
+
+The constructor must accept an object containing options for the animation.
+
+### render(Buffer, Number)
+
+**Parameters**
+
+- `Buffer` - Buffer to render the animation from onto. This object must be modified.
+- `Number` - Delta time (change in time) since the last render call in milliseconds
+
+The render method must render the current animation onto the `Buffer` passed to it. The `Buffer` passed must be modified and no object or variable may be returned.
+
+### setOptions(Object)
+
+**Parameters**
+
+- `Object` - New options to set. This may include new `offset` and `length` properties as well.
+
+Set the animation's options to the object passed. Requirements are similar to the object passed into the constructor.
+
 ## JSON-RPC API
 
 The API is JSON-RPC 2.0 compliant and has several methods for managing the raw pixel data, as well as animations. It can be accessed over a TCP socket or over HTTP.
