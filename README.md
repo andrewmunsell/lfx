@@ -178,9 +178,9 @@ Sets the individual LED at `offset` to the specified RGB color. If an animation 
 **Parameters**
 
 - `offset` - LED to set. 0 index based, where 0 is the LED physically closest to the controller.
-- `h` - Hue value from 0 to 255
-- `s` - Saturation value from 0 to 255
-- `l` - Lightness value from 0 to 255
+- `h` - Hue value from 0 to 360
+- `s` - Saturation value from 0 to 1
+- `l` - Lightness value from 0 to 1
 
 Sets the individual LED at `offset` to the specified HSL value. Behavior is similar to the `set` method.
 
