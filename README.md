@@ -191,7 +191,7 @@ Sets the individual LED at `offset` to the specified HSL value. Behavior is simi
 
 *None*
 
-Clears the entire strand and all animations. After this method is called, the LED strand will be blank.
+Clears the entire strand and removes all animations. After this method is called, the LED strand will be blank.
 
 ### blank
 
