@@ -39,9 +39,9 @@ If using a Raspberry Pi (or similar) and the SPI connector, you may have to run 
 Other command line parameters for the LFX server include:
 
 ```
---help, -h    Display help for LFX                                                             
---config, -c  Path to the configuration file.                                                  
---daemon, -d  Start the process as a daemon. Only useful if the HTTP server is enabled as well.  [default: false]
+--help, -h    Display help for LFX
+--config, -c  Path to the configuration file.
+--daemon, -d  Start the process as a daemon.  [default: false]
 ```
 
 ## Configuration
@@ -61,6 +61,7 @@ A sample configuration file is below with the default values.
 	},
 	
 	"http.server": false,
+	"http.address": "0.0.0.0", // Address to bind to
 	"http.port": 80,
 
 	"tcp.server": true,
@@ -127,16 +128,13 @@ The API is JSON-RPC 2.0 compliant and has several methods for managing the raw p
 
 To use the TCP API, connect to the IP address or hostname and port of the LFX server and send any of the following methods over the TCP socket.
 
-To use the HTTP API, a `POST` request must be sent to the API endpoint, `/api`, with the body containing a valid JSON-RPC command.
+To use the HTTP API, a `POST` request must be sent to the root endpoint with the body containing a valid JSON-RPC command.
 
-Additionally, a WebSocket API is also available. Each message sent to the WebSocket endpoint is considered a separate JSON-RPC command. Currently this API is used for the internal web interface and should not be used by other client applications. Instead, 3rd party clients should use the TCP or HTTP APIs.
-
-In general, the API will respond with a "result" code of 0 with no other data. A 0 code indicates success. For example:
+In general, the API will respond with no other data. For example:
 
 ```
 {
 	"jsonrpc": "2.0",
-	"result": 0,
 	"id": "2fde31ad"
 }
 ```
@@ -184,6 +182,13 @@ Sets the individual LED at `offset` to the specified RGB color. If an animation 
 
 Sets the individual LED at `offset` to the specified HSL value. Behavior is similar to the `set` method.
 
+### setMultiple
+
+**Parameters**
+
+- `leds` - An object whose keys represent the offset of the LED to change, and the value containing an object with `r`, `g`, and `b` values to set the LED to.
+
+Sets multiple LEDs to the specified RGB values.
 
 ### clear
 
