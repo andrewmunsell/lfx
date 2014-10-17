@@ -91,3 +91,13 @@ if(argv.daemon) {
 process.title = 'lfxd';
 
 animation.start();
+
+// Setup the cleanup
+process.on('SIGINT', function() {
+	console.info('Exiting LFX');
+
+	manager.clear();
+	manager.render();
+
+	process.exit();
+});
