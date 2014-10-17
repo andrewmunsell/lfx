@@ -18,7 +18,7 @@ var optimist = require("optimist")
 
 	.boolean('daemon')
 	.default('daemon', false)
-	.describe('daemon', 'Start the process as a daemon. Only useful if the HTTP server is enabled as well.')
+	.describe('daemon', 'Start the process as a daemon.')
 	.alias('daemon', 'd');
 
 var argv = optimist.argv;
@@ -71,6 +71,12 @@ animation.on("tick", function(){
 if(nconf.get('tcp.server')) {
 	var tcp = new (require('./tcp'))(nconf, manager);
 	tcp.start();
+}
+
+// Start up the HTTP server if needed
+if(nconf.get('http.server')) {
+	var http = new (require('./http'))(nconf, manager);
+	http.start();
 }
 
 /**

@@ -1,0 +1,11 @@
+{
+	"leds": 25,
+	
+	"http.server": true,
+	"http.address": "0.0.0.0",
+	"http.port": 8080,
+
+	"tcp.server": true,
+	"tcp.address": "0.0.0.0",
+	"tcp.port": 9123
+}
