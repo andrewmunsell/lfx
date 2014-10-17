@@ -4,7 +4,7 @@
  * @license http://www.gnu.org/licenses/ GNU GPLv3
  */
 
-var optimist = require("optimist")
+var optimist = require('optimist')
 
 	.usage('Run the LFX script.\nUsage: $0')
 
@@ -23,9 +23,9 @@ var optimist = require("optimist")
 
 var argv = optimist.argv;
 
-var defaults 	= require("./defaults.config.js"),
-	Manager 	= require("lfx-light-manager"),
-	Animation 	= (require("animation")).Animation;
+var defaults 	= require('./defaults.config.js'),
+	Manager 	= require('lfx-light-manager'),
+	Animation 	= (require('animation')).Animation;
 
 /**
  * Show help if requested.
@@ -54,16 +54,16 @@ nconf.defaults(defaults);
  */
 process.title = 'lfx';
 
-console.info("Starting LFX...");
+console.info('Starting LFX...');
 
 var manager = new Manager({
-	"leds": nconf.get("leds")
+	leds: nconf.get('leds')
 });
 
 var animation = new Animation({
-	frame: "41ms"
+	frame: '41ms'
 });
-animation.on("tick", function(){
+animation.on('tick', function(){
 	manager.render.call(manager);
 });
 
@@ -83,7 +83,7 @@ if(nconf.get('http.server')) {
  * Fork the process and exit this one if a daemon was requested.
  */
 if(argv.daemon) {
-	console.info("Forking into background process.");
+	console.info('Forking into background process.');
 
 	require('daemon')();
 }
