@@ -25,13 +25,13 @@ function Server(nconf, manager) {
 }
 
 /**
- * Start the TCP JSON-RPC 2.0 server if one is not already started.
+ * Start the HTTP JSON-RPC 2.0 server if one is not already started.
  */
 Server.prototype.start = function() {
 	if(this._server != null)
 		return;
 
-	console.info("Running JSON-RPC 2.0 server on HTTP port", this._nconf.get('http.port'));
+	console.info('Running JSON-RPC 2.0 server on HTTP port', this._nconf.get('http.port'));
 
 	this._server = jayson.server(this._functions);
 	this._server.http().listen(this._nconf.get('http.port'), this._nconf.get('http.address'));
