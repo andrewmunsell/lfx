@@ -1,6 +1,6 @@
 /**
  * @author Andrew Munsell <andrew@wizardapps.net>
- * @copyright 2014 Andrew Munsell
+ * @copyright 2015 Andrew Munsell
  * @license http://www.gnu.org/licenses/ GNU GPLv3
  */
 
