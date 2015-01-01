@@ -19,7 +19,7 @@ function Server(nconf, managers){
 		} else if(typeof(fixture) == 'string') {
 			// Find the manager by its fixture ID
 			for (var i = 0; i < managers.length; i++) {
-				if(managers[i].name == fixture) {
+				if(managers[i].id == fixture) {
 					return managers[i];
 				}
 			};
