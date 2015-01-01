@@ -59,6 +59,8 @@ console.info('Starting LFX...');
 // Initialize the fixtures
 var fixtures = nconf.get('fixtures');
 var managers = [];
+var animations = [];
+
 for (var i = 0; i < fixtures.length; i++) {
 	var manager = (function() {
 		var manager = new Manager(fixtures[i]);
@@ -70,6 +72,8 @@ for (var i = 0; i < fixtures.length; i++) {
 		animation.on('tick', function(){
 			manager.render.call(manager);
 		});
+
+		animations.push(animation);
 
 		return manager;
 	})();
@@ -100,7 +104,10 @@ if(argv.daemon) {
 
 process.title = 'lfxd';
 
-animation.start();
+// Start the animations
+animations.forEach(function(animation) {
+	animation.start();
+});
 
 // Setup the cleanup
 process.on('SIGINT', function() {
