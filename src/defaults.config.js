@@ -5,7 +5,7 @@
  */
 
 module.exports = {
-	'leds': 25,
+	'fixtures': [],
 	
 	'http.server': false,
 	'http.port': 80,

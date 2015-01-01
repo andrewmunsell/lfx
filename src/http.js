@@ -11,15 +11,15 @@ var self;
 /**
  * JSON-RPC 2.0 compliant server that accepts commands for the light manager
  * over HTTP.
- * @param {object} nconf   Instance of Nconf containing the current options
- * @param {object} manager lfx-light-manager instance.
+ * @param {object} nconf    Instance of Nconf containing the current options
+ * @param {array}  managers lfx-light-manager instances.
  */
-function Server(nconf, manager) {
+function Server(nconf, managers) {
 	this._server = null;
 	this._nconf = nconf;
-	this._manager = manager;
+	this._managers = managers;
 
-	this._functions = require('./server')(nconf, manager);
+	this._functions = require('./server')(nconf, managers);
 
 	self = this;
 }

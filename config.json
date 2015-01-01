@@ -1,5 +1,5 @@
 {
-	"leds": 25,
+	"fixtures": [],
 	
 	"http.server": true,
 	"http.address": "0.0.0.0",

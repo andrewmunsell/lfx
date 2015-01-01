@@ -56,26 +56,36 @@ process.title = 'lfx';
 
 console.info('Starting LFX...');
 
-var manager = new Manager({
-	leds: nconf.get('leds')
-});
+// Initialize the fixtures
+var fixtures = nconf.get('fixtures');
+var managers = [];
+for (var i = 0; i < fixtures.length; i++) {
+	var manager = (function() {
+		var manager = new Manager(fixtures[i]);
 
-var animation = new Animation({
-	frame: '41ms'
-});
-animation.on('tick', function(){
-	manager.render.call(manager);
-});
+		var animation = new Animation({
+			frame: '41ms'
+		});
+
+		animation.on('tick', function(){
+			manager.render.call(manager);
+		});
+
+		return manager;
+	})();
+
+	managers.push(manager);
+};
 
 // Start up the TCP server if needed
 if(nconf.get('tcp.server')) {
-	var tcp = new (require('./tcp'))(nconf, manager);
+	var tcp = new (require('./tcp'))(nconf, managers);
 	tcp.start();
 }
 
 // Start up the HTTP server if needed
 if(nconf.get('http.server')) {
-	var http = new (require('./http'))(nconf, manager);
+	var http = new (require('./http'))(nconf, managers);
 	http.start();
 }
 
@@ -96,8 +106,11 @@ animation.start();
 process.on('SIGINT', function() {
 	console.info('Exiting LFX');
 
-	manager.clear();
-	manager.render();
+	// Clear all of the fixtures
+	managers.forEach(function(manager) {
+		manager.clear();
+		manager.render();
+	});
 
 	process.exit();
 });

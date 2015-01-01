@@ -160,6 +160,10 @@ Possible error codes returned by the API include the existing JSON-RPC specifica
 
 The specified offset for the called method was invalid due to being out of the bounds of the LEDs. For example, this error will occur when the index specified is less than 0 or greater than or equal to the number of LEDs.
 
+##### -32002 - Fixture not found
+
+This error is returned if there were no fixtures that matched the specified criteria, or if the fixture index provided was out of bounds.
+
 ### set
 
 **Parameters**
