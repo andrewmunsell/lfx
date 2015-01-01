@@ -81,15 +81,21 @@ for (var i = 0; i < fixtures.length; i++) {
 	managers.push(manager);
 };
 
+/**
+ * Start the Jayson server
+ */
+var jayson = require('jayson');
+var server = jayson.server(require('./server')(nconf, managers));
+
 // Start up the TCP server if needed
 if(nconf.get('tcp.server')) {
-	var tcp = new (require('./tcp'))(nconf, managers);
+	var tcp = new (require('./tcp'))(nconf, server, managers);
 	tcp.start();
 }
 
 // Start up the HTTP server if needed
 if(nconf.get('http.server')) {
-	var http = new (require('./http'))(nconf, managers);
+	var http = new (require('./http'))(nconf, server, managers);
 	http.start();
 }
 
