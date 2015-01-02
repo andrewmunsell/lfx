@@ -48,6 +48,113 @@ function Server(nconf, managers){
 
 	var _functions = {
 		/**
+		 * Get all of the current fixtures and their information.
+		 */
+		getAllFixtures: function(callback) {
+			return _functions.getFixtures(null, callback);
+		},
+
+		/**
+		 * Get the fixtures with the specified filters
+		 * @param {mixed} fixture Fixture offset, fixture ID, or a set of fixture tags
+		 *                        to locate a fixture by
+		 */
+		getFixtures: function(fixture, callback) {
+			var managers = resolveManagers(fixture);
+
+			var fixtures = [];
+			for (var i = 0; i < managers.length; i++) {
+				var manager = managers[i];
+
+				fixtures.push({
+					id: manager.id,
+					description: manager.config.description == null ? null : manager.config.description,
+					leds: manager.config.leds,
+					tags: manager.tags
+				});
+			};
+
+			return callback(null, fixtures);
+		},
+
+		/**
+		 * Clear all tags for the specified fixtures. The client may specify a fixture
+		 * offset, fixture ID, or a set of fixture tags as criteria.
+		 * @param  {mixed} fixture Fixture offset, fixture ID, or a set of fixture tags
+		 *                         to locate a fixture by
+		 */
+		clearFixtureTags: function(fixture, callback) {
+			var managers = resolveManagers(fixture);
+			if(managers.length < 1) {
+				return callback({
+					code: -32002,
+					message: 'The specified fixture was not found. Either no fixtures matched' +
+						' your criteria or the fixture index was out of bounds.'
+				});
+			}
+
+			managers.forEach(function(manager) {
+				manager.tags = [];
+			});
+
+			return _functions.getFixtures(fixture, callback);
+		},
+
+		/**
+		 * Add a tag to a fixture with the specified ID
+		 * @param {string} fixture Fixture ID to add a tag to
+		 * @param {string} tag     Tag to add to the fixture
+		 */
+		addFixtureTag: function(fixture, tag, callback) {
+			if(typeof(fixture) != 'string') {
+				return callback({
+					code: -32600,
+					message: 'The specified fixture ID must be a string.'
+				});
+			}
+
+			if(typeof(tag) != 'string') {
+				return callback({
+					code: -32600,
+					message: 'The specified tag to add to the fixture must be a string.'
+				});
+			}
+
+			var managers = resolveManagers(fixture);
+			if(managers.length < 1) {
+				return callback({
+					code: -32002,
+					message: 'The specified fixture was not found.'
+				});
+			}
+
+			managers[0].tags.push(tag);
+
+			return _functions.getFixtures(fixture, callback);
+		},
+
+		/**
+		 * Set the tags for the specified fixture(s). The fixture parameter may be a fixture
+		 * offset, fixture ID, or set of tags to find fixtures by.
+		 * @param {mixed} fixture Fixture offset, fixture ID, or a set of fixture tags
+		 *                        to locate a fixture by
+		 * @param {array} tags    Tags to add to the fixture(s) matched by the specified criteria
+		 */
+		setFixtureTags: function(fixture, tags, callback) {
+			var managers = resolveManagers(fixture);
+			for (var i = 0; i < managers.length; i++) {
+				var manager = managers[i];
+
+				this.clearFixtureTags(manager.id);
+				for (var i = 0; i < tags.length; i++) {
+					this.addFixtureTag(manager.id, tags[i]);
+				};
+			};
+
+			return _functions.getFixtures(fixture, callback);
+		},
+
+		/**
 		 * Set the RGB value of the LED at the specified offset
 		 * @param {mixed}    fixture  Offset of the fixture to change, string representing the ID
 		 *                            of the fixture to change, or an array containing strings
