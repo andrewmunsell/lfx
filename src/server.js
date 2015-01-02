@@ -68,6 +68,7 @@ function Server(nconf, managers){
 
 				fixtures.push({
 					id: manager.id,
+					parent: null,
 					description: manager.config.description == null ? null : manager.config.description,
 					leds: manager.config.leds,
 					tags: manager.tags
