@@ -91,6 +91,18 @@ Each connector must take a configuration object in its constructor. The contents
 
 Additionally, the connector must implement a single method-- `render(Buffer)`. The render method accepts a Buffer of length `3 * LEDs`. The buffer passed into the render method is guaranteed to be a length divisible by 3 and contain bytes representing RGB values, with each triplet representing a single LED's state.
 
+Connectors may also specify a `getChildFixtures` method. This will be called if it exists, and should return a list of fixtures that this connector is currently managing. This is useful for networked connectors that manage the fixtures of *another* LFX server.
+
+For example, given the following physical topology the child fixtures may be useful:
+
+- Raspberry Pi [master]
+  - SPI Connector
+  - TCP Connector [connected to: Rasberry Pi 2]
+- Raspberry Pi 2
+  - SPI Connector 2
+
+The master Raspberry Pi's TCP connector would return the "SPI Connector 2" when `getChildFixtures` is called. These child fixtures are ALSO returned in a call to the master LFX server's `getAllFixtures` or `getFixtures` method, but with a "parent" property set to the parent's ID that indicates the fixture is a child.
+
 ## Animations
 
 Animations are modules designed to allow for continuous update of LEDs and display of patterns. Animations may be configured for the entire strand of LEDs or a subset. Each animation must not require a minimum or maximum strand length, as they may be applied for a single LED or an entire strand of hundreds.
