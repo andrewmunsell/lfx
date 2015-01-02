@@ -25,7 +25,7 @@ function Server(nconf, managers){
 			};
 		} else if(typeof(fixture) == 'array') {
 			// Find the manager by its fixture tags
-			var selectedManagers = [];
+			var selectedManagers = {};
 
 			for (var i = 0; i < fixture.length; i++) {
 				for (var j = 0; j < managers.length; j++) {
@@ -33,12 +33,12 @@ function Server(nconf, managers){
 						managers[j].tags.length &&
 						managers[j].tags.indexOf(fixture[i]) > -1) {
 
-						selectedManagers.push(managers[j]);
+						selectedManagers[managers[j].id] = managers[j];
 					}
 				};
 			};
 
-			return selectedManagers;
+			return _.values(selectedManagers);
 		}
 
 		return [];
