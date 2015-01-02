@@ -1,6 +1,6 @@
 # LFX
 
-System for managing and controlling strands of LEDs. The system is controllable over a network with a TCP/HTTP JSON-RPC API as well as a HTTP web interface.
+System for managing and controlling lights. The system is controllable over a network with a TCP/HTTP JSON-RPC API as well as a HTTP web interface. Different types of illumination devices can be controlled with different "connectors", and multiple fixtures are supported per LFX controller. Each LFX server can also pass on commands to other "slave" LFX servers, which allows for scenarios where you may have multiple Raspberry Pi devices connected to LED strands over SPI and allows the user to control ALL of these strands over a network connection from a master LFX server.
 
 LFX is distributed under the GNU GPLv3 license.
 
@@ -152,6 +152,8 @@ Alternatively, an error may be returned according to the JSON-RPC specification:
 }
 ```
 
+Most API methods are performed on a subset of the fixtures the LFX server controls. The matched fixtures can be specified with the first parameters for methods that support it.
+
 #### Error Codes
 
 Possible error codes returned by the API include the existing JSON-RPC specification error codes, as well as the following:
@@ -168,45 +170,39 @@ This error is returned if there were no fixtures that matched the specified crit
 
 **Parameters**
 
-- `offset` - LED to set. 0 index based, where 0 is the LED physically closest to the controller.
+- `fixture` - Fixture filter parameters. Can be a numeric fixture offset, a string based fixture ID, or an array of fixture tags. If null is provided, all fixtures will be matched.
+- `offset` - LED to set. 0 index based.
 - `r` - Red value from 0 to 255
 - `g` - Green value from 0 to 255
 - `b` - Blue value from 0 to 255
 
-Sets the individual LED at `offset` to the specified RGB color. If an animation is currently running and renders to this LED, it will overwrite this value during the next render cycle. Otherwise, this LED will stay lit until another `set` is called on this LED, the LED strand is cleared, or an animation renders onto this LED.
+Sets the individual LED at `offset` to the specified RGB color. If an animation is currently running and renders to this LED, it will overwrite this value during the next render cycle. Otherwise, this LED will stay lit until another `set` is called on this LED, the LED fixture is cleared, or an animation renders onto this LED.
 
 ### setHSL
 
 **Parameters**
 
-- `offset` - LED to set. 0 index based, where 0 is the LED physically closest to the controller.
+- `fixture` - Fixture filter parameters. Can be a numeric fixture offset, a string based fixture ID, or an array of fixture tags. If null is provided, all fixtures will be matched.
+- `offset` - LED to set. 0 index based.
 - `h` - Hue value from 0 to 360
 - `s` - Saturation value from 0 to 1
 - `l` - Lightness value from 0 to 1
 
 Sets the individual LED at `offset` to the specified HSL value. Behavior is similar to the `set` method.
 
-### setMultiple
-
-**Parameters**
-
-- `leds` - An object whose keys represent the offset of the LED to change, and the value containing an object with `r`, `g`, and `b` values to set the LED to.
-
-Sets multiple LEDs to the specified RGB values.
-
 ### clear
 
 **Parameters**
 
-*None*
+- `fixture` - Fixture filter parameters. Can be a numeric fixture offset, a string based fixture ID, or an array of fixture tags. If null is provided, all fixtures will be matched.
 
-Clears the entire strand and removes all animations. After this method is called, the LED strand will be blank.
+Clears the entire fixture and removes all animations. After this method is called, the LED strand will be blank.
 
 ### blank
 
 **Parameters**
 
-*None*
+- `fixture` - Fixture filter parameters. Can be a numeric fixture offset, a string based fixture ID, or an array of fixture tags. If null is provided, all fixtures will be matched.
 
 Blanks the entire LED strand. This method, unlike `clear`, will *not* remove any animations-- it will only clear the pixel buffer. If any animations are active, they will still render on the next cycle.
 
@@ -214,7 +210,7 @@ Blanks the entire LED strand. This method, unlike `clear`, will *not* remove any
 
 **Parameters**
 
-*None*
+- `fixture` - Fixture filter parameters. Can be a numeric fixture offset, a string based fixture ID, or an array of fixture tags. If null is provided, all fixtures will be matched.
 
 Retrieve a list of all animations currently active on the LED strand.
 
@@ -222,6 +218,7 @@ Retrieve a list of all animations currently active on the LED strand.
 
 **Parameters**
 
+- `fixture` - Fixture filter parameters. Can be a numeric fixture offset, a string based fixture ID, or an array of fixture tags. If null is provided, all fixtures will be matched.
 - `id` - Identifier of the animation to retrieve information for.
 
 Retrieves the animation specified, including any configuration options.
@@ -230,6 +227,7 @@ Retrieves the animation specified, including any configuration options.
 
 **Parameters**
 
+- `fixture` - Fixture filter parameters. Can be a numeric fixture offset, a string based fixture ID, or an array of fixture tags. If null is provided, all fixtures will be matched.
 - `id` - Identifier of the animation to move.
 - `index` - Index to move the animation to. All subsequent animations will be shifted down in the render order.
 
@@ -239,6 +237,7 @@ Move the specified animation to a new position in the render order.
 
 **Parameters**
 
+- `fixture` - Fixture filter parameters. Can be a numeric fixture offset, a string based fixture ID, or an array of fixture tags. If null is provided, all fixtures will be matched.
 - `id` - Identifier of the animation to delete.
 
 Deletes the specified animation. This will not clear any LEDs modified by the animation.
@@ -247,7 +246,7 @@ Deletes the specified animation. This will not clear any LEDs modified by the an
 
 **Parameters**
 
-*None*
+- `fixture` - Fixture filter parameters. Can be a numeric fixture offset, a string based fixture ID, or an array of fixture tags. If null is provided, all fixtures will be matched.
 
 Deletes all animations. This will not clear any LEDs modified by the animations.
 
@@ -302,6 +301,7 @@ Retrieves an array of available animations.
 
 **Parameters**
 
+- `fixture` - Fixture filter parameters. Can be a numeric fixture offset, a string based fixture ID, or an array of fixture tags. If null is provided, all fixtures will be matched.
 - `animation` - ID of the animation to receive the notification
 - `name` - String containing the name of the notification
 - `payload` - Payload of a variable type for the  (Number, String, Array, or Object)
