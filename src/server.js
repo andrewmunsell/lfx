@@ -20,7 +20,7 @@ function Server(nconf, managers){
 			// Find the manager by its fixture ID
 			for (var i = 0; i < managers.length; i++) {
 				if(managers[i].id == fixture) {
-					return managers[i];
+					return [managers[i]];
 				}
 			};
 		} else if(typeof(fixture) == 'array') {
