@@ -39,6 +39,8 @@ function Server(nconf, managers){
 			};
 
 			return _.values(selectedManagers);
+		} else if(typeof(fixture) == 'null') {
+			return managers;
 		}
 
 		return [];
