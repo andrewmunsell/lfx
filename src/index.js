@@ -6,10 +6,10 @@
 
 var optimist = require('optimist')
 
-	.usage('Run the LFX script.\nUsage: $0')
+	.usage('LFX server.\n\nUsage: $0')
 
 	.boolean('help')
-	.describe('help', 'Display help for LFX')
+	.describe('help', 'Display help for LFX.')
 	.alias('help', 'h')
 
 	.string('config')
@@ -19,13 +19,15 @@ var optimist = require('optimist')
 	.boolean('daemon')
 	.default('daemon', false)
 	.describe('daemon', 'Start the process as a daemon.')
-	.alias('daemon', 'd');
+	.alias('daemon', 'd')
+
+	.string('connect')
+	.describe('connect', 'Master LFX server to connect to. If omitted, this instance will act as a master.')
+	.alias('connect', 'C');
 
 var argv = optimist.argv;
 
-var defaults 	= require('./defaults.config.js'),
-	Manager 	= require('lfx-light-manager'),
-	Animation 	= (require('animation')).Animation;
+var defaults 	= require('./defaults.config.js');
 
 /**
  * Show help if requested.
@@ -52,52 +54,9 @@ nconf.defaults(defaults);
 /**
  * Start up the server
  */
-process.title = 'lfx';
+process.title = 'lfxd';
 
 console.info('Starting LFX...');
-
-// Initialize the fixtures
-var fixtures = nconf.get('fixtures');
-var managers = [];
-var animations = [];
-
-for (var i = 0; i < fixtures.length; i++) {
-	var manager = (function() {
-		var manager = new Manager(fixtures[i]);
-
-		var animation = new Animation({
-			frame: '41ms'
-		});
-
-		animation.on('tick', function(){
-			manager.render.call(manager);
-		});
-
-		animations.push(animation);
-
-		return manager;
-	})();
-
-	managers.push(manager);
-};
-
-/**
- * Start the Jayson server
- */
-var jayson = require('jayson');
-var server = jayson.server(require('./server')(nconf, managers));
-
-// Start up the TCP server if needed
-if(nconf.get('tcp.server')) {
-	var tcp = new (require('./tcp'))(nconf, server, managers);
-	tcp.start();
-}
-
-// Start up the HTTP server if needed
-if(nconf.get('http.server')) {
-	var http = new (require('./http'))(nconf, server, managers);
-	http.start();
-}
 
 /**
  * Fork the process and exit this one if a daemon was requested.
@@ -108,22 +67,9 @@ if(argv.daemon) {
 	require('daemon')();
 }
 
-process.title = 'lfxd';
-
-// Start the animations
-animations.forEach(function(animation) {
-	animation.start();
-});
-
 // Setup the cleanup
 process.on('SIGINT', function() {
 	console.info('Exiting LFX');
-
-	// Clear all of the fixtures
-	managers.forEach(function(manager) {
-		manager.clear();
-		manager.render();
-	});
 
 	process.exit();
 });

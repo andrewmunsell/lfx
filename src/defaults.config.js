@@ -5,12 +5,7 @@
  */
 
 module.exports = {
-	'fixtures': [],
-	
-	'http.server': false,
-	'http.port': 80,
-
-	'tcp.server': true,
-	'tcp.address': '0.0.0.0',
-	'tcp.port': 9123
-}
+	'server': false,
+	'bind': '0.0.0.0',
+	'port': 80
+};

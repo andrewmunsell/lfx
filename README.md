@@ -1,321 +1,152 @@
 # LFX
 
-System for managing and controlling lights. The system is controllable over a network with a TCP/HTTP JSON-RPC API as well as a HTTP web interface. Different types of illumination devices can be controlled with different "connectors", and multiple fixtures are supported per LFX controller. Each LFX server can also pass on commands to other "slave" LFX servers, which allows for scenarios where you may have multiple Raspberry Pi devices connected to LED strands over SPI and allows the user to control ALL of these strands over a network connection from a master LFX server.
+System for managing and controlling lights. The system is controllable over a network with a REST HTTP API. LFX is primarily designed to control strands of LEDs, though it has support for anything ranging from a simple binary on/off bulb to a full LED matrix or screen. LFX can be used as a way to illuminate a room, house, or potentially create a light show.
 
-LFX is distributed under the GNU GPLv3 license.
+## Terminology
 
-*Note: The following API documentation is under development and is not complete. Additionally, not all API functionality listed here is functional.*
+### LFX Server
 
-## Installation
+The LFX server is the software (this software) that controls zero or more fixtures and coordinates everything.
 
-LFX requires Node.js v0.10.20 or higher. Once this repository has been cloned onto the computer to run the server software, simply run `npm install` to download and compile all dependencies.
+### Slave LFX Server
 
-### Raspberry Pi
+A slave LFX server remains in communication with the master LFX server in order to "extend" the reach of the master. For example, you might have a master LFX server in your living room that acts as the brain for a house-wide system. You then could place a slave LFX server in your bedroom with LEDs attached to it via SPI or USB. This slave would then listen to the master for commands to pass onto the fixtures that the slave controls.
 
-To use the SPI connector, you must also [remove the SPI driver from the blacklist](http://nwazet.com/code/loading-i2c-spi-and-1-wire-drivers-on-the-raspberry-pi-under-raspbian-wheezy).
+The benefit of having a master-slave architecture is that is allows for the LFX system to encompass a whole building, or potentially a complex of buildings, while keeping the architecture simple (masterless systems are much more complex). 
 
-## Usage
+### Source
 
-The LFX server must be run on the computer that has control of the LED strand. For example, LFX with the SPI connector may be run directly on a Raspberry Pi, or on a Mac or Windows PC with a serial connector.
+A source is an individual, controllable piece of hardware that illuminates-- it's a source of light. This can be something like a light bulb, a single LED (even on an LED strand, each LED is its own source), or a pixel on a screen. A light source is the single smallest unit a LFX system can be broken down to.
 
-To start the LFX server, use the following command:
+### Fixture
 
-```
-node src/index.js
-```
+A fixture is a logical grouping of light sources. For example, a complete strand of LEDs would be considered a fixture. A fixture can have one or more light sources in it. Anything from a bulb to a LCD screen could be considered a fixture.
 
-To run as a background daemon, the `-d` command line switch may be used:
+Fixtures do not necessarily need to be controlled by separate physical hardware controllers.
 
-```
-node src/index.js -d
-```
+Fixtures have other user-defined properties, such as a name and description. A unique ID is generated for each fixture by the system.
 
-When run as a daemon, the LFX process will be forked and run in the background. The command will then return.
+### Fixture Model
 
-If using a Raspberry Pi (or similar) and the SPI connector, you may have to run LFX as `sudo` to access the SPI device.
+A fixture model is a set of metadata describing a specific set of hardware's capabilities. 
 
-### Command Line Parameters
+There are several different types of fixtures, with each fixture model having one of the properties of each category listed below:
 
-Other command line parameters for the LFX server include:
+- Single source or multisource
+- Single color, multicolor, or omnicolor
+- Binary level, multilevel, or omnilevel
 
-```
---help, -h    Display help for LFX
---config, -c  Path to the configuration file.
---daemon, -d  Start the process as a daemon.  [default: false]
-```
+### Single Source Fixture
 
-## Configuration
+Single source fixtures have only one light source within the fixture. For example, a lightbulb or LED bulb with a single controllable element would be considered a single source fixture. Note that even if a fixture technically has more than one point of light emission (e.g. red, blue, and green subpixels or LEDs), it is still considered a single source fixture if each subpixel is controlled in unison.
 
-A JSON configuration file may be specified to alter LFX's default HTTP and TCP servers, as well as configure other options such as the number of LEDs.
+### Multisource Fixture
 
-A sample configuration file is below with the default values.
+A multisource fixture has more than one controllable light source within it. For example, a strand of LEDs would be considered a multisource fixture.
+
+### Single Color Fixture
+
+A single color fixture is, as the name implies, a fixture that can only display a single color. For example, a conventional lightbulb would be a single color fixture.
+
+### Multicolor Fixture
+
+A multicolor fixture can display a predefined set of colors. Note that though all fixtures can technically be considered multicolor (i.e. every light source has a color range), multicolor light sources generally have a set of predefined colors that do not correspond to a linear range. For example, some multicolor LED mice have a specific set of colors they can display (red, teal, green, etc.), but they cannot display just any RGB color.
+
+### Omnicolor Fixture
+
+Omnicolor fixtures can output light in a predefined range of values. For example, an RGB LED strand would be considered an omnicolor fixture because it can display light in a range of RGB values.
+
+### Binary Level Fixture
+
+A binary level fixture can only display two levels of light-- "on", or "off".
+
+### Multilevel Fixture
+
+A multilevel fixture can only display light at predefined levels. Note that though all fixtures could technically be considered multilevel (as will the multicolor vs omnicolor), multilevel fixtures may not have a linear range (e.g. low, medium, high).
+
+### Omnilevel Fixture
+
+An omnilevel fixture can display light in a range of brightness levels, similar to how omnicolor fixtures can display a range of colors.
+
+### Fixture Group
+
+A fixture group is a logical group of fixtures and can contain zero or more fixtures inside of it. Generally, fixture groups are used for organizational purposes by the end user. Fixture groups can also be nested-- one group can contain any number of groups within it with infinite depth.
+
+Fixture groups often are used for grouping different fixtures into sections, rooms, or other logical groups.
+
+A single fixture can only be a part of one fixture group at a time.
+
+### Connector
+
+A connector is a code module that interfaces with hardware. For example, an SPI connector could be used to interface with a strand of LEDs over the SPI protocol. Alternatively, a Phillips Hue connector could be used to control Phillips Hue hardware. Each fixture has a single connector.
+
+### Command
+
+A command is a set of instructions that can be issued to a fixture. The command can be something as simple as "set color to XXX", or "display chase animation". If a fixture is not capable of fulfilling a command (e.g. a command such as "set color to red" is sent to a single color fixture), the fixture can either improvise or ignore the command entirely.
+
+### Animation
+
+An animation is a piece of code that constantly updates a fixture's light sources. The animation is run in a loop determined by the maximum framerate of the fixture. Animations can either react from outside data sources (e.g. a microphone for beat detection, or even from the Internet to allow for dynamic lighting based on weather, Tweets, etc.), or in a predetermined manner.
+
+### Scene
+
+A scene is a predefined set of commands to run. 
+
+For example, you might have a "bedtime" scene that turns all overhead fixtures off and turns on accent lighting as a nightlight. Or, you could have a "party" scene that turns on a beat matching animation for your "living room" fixture group and illuminates your porch so guests can see your house.
+
+## Fixture Model
+
+Fixture model metadata files allow for users to define capabilities of different hardware. Metadata files should be included in the main LFX repository, with one file per hardware model in JSON format.
+
+Fixture model metadata files should be in the following format, with the appropriate fields filled out depending on the model's capabilities:
 
 ```
 {
-	"leds": 25,
+	"name": "Name of the fixture model",
+	"description": "Description of the fixture model",
 	
-	"connector": "spi",
-	"connector.options": {
-		"device": "/dev/spidev0.0",
-		"mode": 0
+	"capabilities": {
+		"source": "single|multi",
+		"color": "single|multi|omni",
+		"level": "binary|multi|omni"
 	},
 	
-	"http.server": false,
-	"http.address": "0.0.0.0", // Address to bind to
-	"http.port": 80,
-
-	"tcp.server": true,
-	"tcp.address": "0.0.0.0", // Address to bind to
-	"tcp.port": 9123
+	"source": {
+		
+	}
 }
-```
-
-The configuration file may be specified with the `-config` command line flag:
-
-```
-node src/index.js -c config.json
 ```
 
 ## Connectors
 
-LFX is designed to support management of LEDs over multiple types of interfaces. Initially, LFX has support for SPI connected LEDs, such as the WS2801 strand [sold by Adafruit](http://www.adafruit.com/products/738).
-
-Potential future connectors include:
-
-- Serial (to facilitate PC/Mac-Arduino-LED connections, for example)
-- TCP/UDP socket
+LFX allows for user-developed connectors. This architecture allows for developers to write connectors to suit their own needs, or download connectors developed by others.
 
 ### Specification
 
-Each connector must take a configuration object in its constructor. The contents of this object are taken from the configuration file loaded by LFX.
+Connectors must implement the following specification:
 
-Additionally, the connector must implement a single method-- `render(Buffer)`. The render method accepts a Buffer of length `3 * LEDs`. The buffer passed into the render method is guaranteed to be a length divisible by 3 and contain bytes representing RGB values, with each triplet representing a single LED's state.
+Connectors must be defined in separate Node.js modules. Each module should only handle one type of fixture. For example, though it would be possible to implement a connector that connects to lights over SPI *and* serial connections, two separate connectors should be developed instead.
 
-Connectors may also specify a `getChildFixtures` method. This will be called if it exists, and should return a list of fixtures that this connector is currently managing. This is useful for networked connectors that manage the fixtures of *another* LFX server.
-
-For example, given the following physical topology the child fixtures may be useful:
-
-- Raspberry Pi [master]
-  - SPI Connector
-  - TCP Connector [connected to: Rasberry Pi 2]
-- Raspberry Pi 2
-  - SPI Connector 2
-
-The master Raspberry Pi's TCP connector would return the "SPI Connector 2" when `getChildFixtures` is called. These child fixtures are ALSO returned in a call to the master LFX server's `getAllFixtures` or `getFixtures` method, but with a "parent" property set to the parent's ID that indicates the fixture is a child.
-
-## Animations
-
-Animations are modules designed to allow for continuous update of LEDs and display of patterns. Animations may be configured for the entire strand of LEDs or a subset. Each animation must not require a minimum or maximum strand length, as they may be applied for a single LED or an entire strand of hundreds.
-
-Animations must be packaged as NPM modules that conform to the following specification. There are several methods each animation must implement:
-
-### Animation(Object, LFXLightManager)
-
-**Parameters**
-
-- `Object` - The object will contain options for the animation to initialize with. The options object will always contain a `length` property that indicates the number of LEDs the animation is responsible for, as well as an `offset` property indicating the starting index of the LEDs to manage.
-- `LFXLightManager (Object)` - The [LFX light manager](https://github.com/andrewmunsell/lfx-light-manager) of this animation. This reference is used to register for message notifications.
-
-The constructor must accept an object containing options for the animation.
-
-### render(Number)
-
-**Parameters**
-
-- `Number` - Delta time (change in time) since the last render call in milliseconds
-
-The render method must render the current animation onto the LFX Light Manager instance passed to it during initialization. See the documentation for the LFX Light Manager for more information on the methods available to the animations.
-
-### setOptions(Object)
-
-**Parameters**
-
-- `Object` - New options to set. This may include new `offset` and `length` properties as well.
-
-Set the animation's options to the object passed. Requirements are similar to the object passed into the constructor.
-
-## JSON-RPC API
-
-The API is JSON-RPC 2.0 compliant and has several methods for managing the raw pixel data, as well as animations. It can be accessed over a TCP socket or over HTTP.
-
-To use the TCP API, connect to the IP address or hostname and port of the LFX server and send any of the following methods over the TCP socket.
-
-To use the HTTP API, a `POST` request must be sent to the root endpoint with the body containing a valid JSON-RPC command.
-
-In general, the API will respond with no other data. For example:
+Each connector module should export a Javascript object that can be instantiated by the LFX system. For example, a connector's source code might look something like this:
 
 ```
-{
-	"jsonrpc": "2.0",
-	"id": "2fde31ad"
-}
+var Connector = function(options) {
+	// ...
+};
+
+Connector.prototype.method = function() {
+	// ...
+};
+
+// ...
+
+module.exports = Connector;
 ```
 
-Alternatively, an error may be returned according to the JSON-RPC specification:
+#### static `metadata()`
 
-```
-{
-	"jsonrpc": "2.0",
-	"error": {
-		"code": -32602,
-		"message": "LED index out of bounds"
-	},
-	"id": "3fed39c0"
-}
-```
+The static method "metadata" should return an object with information about the connector.
 
-Most API methods are performed on a subset of the fixtures the LFX server controls. The matched fixtures can be specified with the first parameters for methods that support it.
+#### constructor(Object)
 
-#### Error Codes
-
-Possible error codes returned by the API include the existing JSON-RPC specification error codes, as well as the following:
-
-##### -32001 - LED index out of bounds
-
-The specified offset for the called method was invalid due to being out of the bounds of the LEDs. For example, this error will occur when the index specified is less than 0 or greater than or equal to the number of LEDs.
-
-##### -32002 - Fixture not found
-
-This error is returned if there were no fixtures that matched the specified criteria, or if the fixture index provided was out of bounds.
-
-### set
-
-**Parameters**
-
-- `fixture` - Fixture filter parameters. Can be a numeric fixture offset, a string based fixture ID, or an array of fixture tags. If null is provided, all fixtures will be matched.
-- `offset` - LED to set. 0 index based.
-- `r` - Red value from 0 to 255
-- `g` - Green value from 0 to 255
-- `b` - Blue value from 0 to 255
-
-Sets the individual LED at `offset` to the specified RGB color. If an animation is currently running and renders to this LED, it will overwrite this value during the next render cycle. Otherwise, this LED will stay lit until another `set` is called on this LED, the LED fixture is cleared, or an animation renders onto this LED.
-
-### setHSL
-
-**Parameters**
-
-- `fixture` - Fixture filter parameters. Can be a numeric fixture offset, a string based fixture ID, or an array of fixture tags. If null is provided, all fixtures will be matched.
-- `offset` - LED to set. 0 index based.
-- `h` - Hue value from 0 to 360
-- `s` - Saturation value from 0 to 1
-- `l` - Lightness value from 0 to 1
-
-Sets the individual LED at `offset` to the specified HSL value. Behavior is similar to the `set` method.
-
-### clear
-
-**Parameters**
-
-- `fixture` - Fixture filter parameters. Can be a numeric fixture offset, a string based fixture ID, or an array of fixture tags. If null is provided, all fixtures will be matched.
-
-Clears the entire fixture and removes all animations. After this method is called, the LED strand will be blank.
-
-### blank
-
-**Parameters**
-
-- `fixture` - Fixture filter parameters. Can be a numeric fixture offset, a string based fixture ID, or an array of fixture tags. If null is provided, all fixtures will be matched.
-
-Blanks the entire LED strand. This method, unlike `clear`, will *not* remove any animations-- it will only clear the pixel buffer. If any animations are active, they will still render on the next cycle.
-
-### getAnimations
-
-**Parameters**
-
-- `fixture` - Fixture filter parameters. Can be a numeric fixture offset, a string based fixture ID, or an array of fixture tags. If null is provided, all fixtures will be matched.
-
-Retrieve a list of all animations currently active on the LED strand.
-
-### getAnimation
-
-**Parameters**
-
-- `fixture` - Fixture filter parameters. Can be a numeric fixture offset, a string based fixture ID, or an array of fixture tags. If null is provided, all fixtures will be matched.
-- `id` - Identifier of the animation to retrieve information for.
-
-Retrieves the animation specified, including any configuration options.
-
-### moveAnimation
-
-**Parameters**
-
-- `fixture` - Fixture filter parameters. Can be a numeric fixture offset, a string based fixture ID, or an array of fixture tags. If null is provided, all fixtures will be matched.
-- `id` - Identifier of the animation to move.
-- `index` - Index to move the animation to. All subsequent animations will be shifted down in the render order.
-
-Move the specified animation to a new position in the render order.
-
-### deleteAnimation
-
-**Parameters**
-
-- `fixture` - Fixture filter parameters. Can be a numeric fixture offset, a string based fixture ID, or an array of fixture tags. If null is provided, all fixtures will be matched.
-- `id` - Identifier of the animation to delete.
-
-Deletes the specified animation. This will not clear any LEDs modified by the animation.
-
-### deleteAnimations
-
-**Parameters**
-
-- `fixture` - Fixture filter parameters. Can be a numeric fixture offset, a string based fixture ID, or an array of fixture tags. If null is provided, all fixtures will be matched.
-
-Deletes all animations. This will not clear any LEDs modified by the animations.
-
-### getAvailableAnimations
-
-**Parameters**
-
-*None*
-
-Retrieves an array of available animations.
-
-**Sample response**
-
-```
-[
-	{
-		"id": "color-fill",
-		"name": "Color Fill",
-		
-		"options": {
-			"color": {
-				"type": "color",
-				"name": "Color"
-			}
-		}
-	},
-	
-	{
-		"id": "music-visualizer",
-		"name": "Music Visualizer",
-		
-		"options": {
-			"excitement": {
-				"type": "ranger",
-				"min": 0,
-				"max": 1,
-				"step": 0.1,
-				"name": "Excitement"
-			}
-		},
-		
-		"notifications": [
-			"beat",
-			"kick",
-			"snare"
-		]
-	}
-]
-```
-
-### notify
-
-**Parameters**
-
-- `fixture` - Fixture filter parameters. Can be a numeric fixture offset, a string based fixture ID, or an array of fixture tags. If null is provided, all fixtures will be matched.
-- `animation` - ID of the animation to receive the notification
-- `name` - String containing the name of the notification
-- `payload` - Payload of a variable type for the  (Number, String, Array, or Object)
-
-Notifies an animation of an event. For example, the music vizualizer may use the notification service to receive beat, kick, and snare events from another host running audio processing software.
+The connector constructor must take a single options object. This options object will contain 
