@@ -4,30 +4,12 @@
  * @license http://www.gnu.org/licenses/ GNU GPLv3
  */
 
-var optimist = require('optimist')
+var IoC = require('electrolyte');
+IoC.loader(IoC.node('src'));
 
-	.usage('LFX server.\n\nUsage: $0')
-
-	.boolean('help')
-	.describe('help', 'Display help for LFX.')
-	.alias('help', 'h')
-
-	.string('config')
-	.describe('config', 'Path to the configuration file.')
-	.alias('config', 'c')
-
-	.boolean('daemon')
-	.default('daemon', false)
-	.describe('daemon', 'Start the process as a daemon.')
-	.alias('daemon', 'd')
-
-	.string('connect')
-	.describe('connect', 'Master LFX server to connect to. If omitted, this instance will act as a master.')
-	.alias('connect', 'C');
+var optimist = IoC.create('optimist');
 
 var argv = optimist.argv;
-
-var defaults 	= require('./defaults.config.js');
 
 /**
  * Show help if requested.
@@ -41,15 +23,7 @@ if(argv.help) {
 /**
  * Parse the command line flags and configuration items
  */
-var nconf = require('nconf');
-
-nconf.argv();
-
-if(argv.config !== undefined) {
-	nconf.file(argv.config);
-}
-
-nconf.defaults(defaults);
+var nconf = IoC.create('conf');
 
 /**
  * Start up the server
@@ -67,25 +41,11 @@ if(argv.daemon) {
 	require('daemon')();
 }
 
-// Start the event loop and actually setup the logic for LFX
-var _ = require('lodash');
-var fixtures = nconf.get('fixtures') || [];
+// Start the event loop and setup the server
+var loop = IoC.create('loop');
+var app = IoC.create('app');
 
-fixtures = fixtures.map(function(fixture) {
-	var Connector = require(fixture.options.connector);
-	fixture.fixture = new Connector(fixture.options);
-
-	return fixture;
-});
-
-var animitter = require('animitter');
-var loop = animitter({ fps: 30, async: true }, function(frame, deltaTime, next) {
-	var n = _.after(fixtures.length, next);
-
-	fixtures.forEach(function(fixture) {
-		fixture.fixture.render(frame, deltaTime, n);
-	});
-});
+IoC.create('routes');
 
 // Setup the cleanup
 process.on('SIGINT', function() {
