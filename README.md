@@ -156,13 +156,13 @@ The connector constructor must take a single options object. The options will co
 
 Render the LEDs for the specified frame and delta time in milliseconds since the last render. The next parameter indicates the callback that should be called when the frame is finished rendering.
 
-#### `setLevel(level[, sourceStart][, sourceEnd])`
+#### `setLevel(level[, sourceStart[, sourceEnd]])`
 
 Sets the level of the fixture. If the fixture is a binary level fixture, any truthy value will be considered "on", while any falsey value will be considered "off". Multilevel fixtures define their own "level" values, while omnilevel fixtures will receive a floating point value from 0-1, inclusive.
 
 If source start and/or end parameters are specified, then the fixture's levels should be changed from the specified indicies (inclusive, exclusive).
 
-#### `setColor(color[, sourceStart][, sourceEnd])`
+#### `setColor(color[, sourceStart [, sourceEnd]])`
 
 Sets the color of the fixture. The color parameter must be an object in one of the following formats:
 
