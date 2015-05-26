@@ -67,9 +67,35 @@ if(argv.daemon) {
 	require('daemon')();
 }
 
+// Start the event loop and actually setup the logic for LFX
+var _ = require('lodash');
+var fixtures = nconf.get('fixtures') || [];
+
+fixtures = fixtures.map(function(fixture) {
+	var Connector = require(fixture.options.connector);
+	fixture.fixture = new Connector(fixture.options);
+
+	return fixture;
+});
+
+var animitter = require('animitter');
+var loop = animitter({ fps: 30, async: true }, function(frame, deltaTime, next) {
+	var n = _.after(fixtures.length, next);
+
+	fixtures.forEach(function(fixture) {
+		fixture.fixture.render(frame, deltaTime, n);
+	});
+});
+
 // Setup the cleanup
 process.on('SIGINT', function() {
 	console.info('Exiting LFX');
 
+	// Stop the animation loop
+	loop.complete();
+
 	process.exit();
 });
+
+// Start the loop for real
+loop.start();
