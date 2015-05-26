@@ -9,7 +9,23 @@ module.exports = {
 	'bind': '0.0.0.0',
 	'port': 80,
 
-	'fixtures': [
-		// Currently loaded fixtures
-	]
+	'db': {
+		// Path to the database file, relative to the user's app data folder if the path begins with
+		// "$APPDATA".
+		'path': '$APPDATA/net.wizardapps.lfx.db',
+
+		'collections': [
+			{
+				name: 'fixtures',
+				options: {
+					disableChangesApi: false
+				}
+			},
+
+			{
+				name: 'groups',
+				options: {}
+			}
+		]
+	}
 };
