@@ -14,6 +14,7 @@ var DummyConnector = function(options) {
 
 	this._dirty = false;
 
+	// Initialize the connector with the default settings of on and set to black.
 	this.setLevel(1);
 	this.setColor({
 		r: 0,
