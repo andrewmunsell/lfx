@@ -42,6 +42,7 @@ if(argv.daemon) {
 }
 
 // Start the event loop and setup the server
+var db = IoC.create('db');
 var loop = IoC.create('loop');
 var app = IoC.create('app');
 

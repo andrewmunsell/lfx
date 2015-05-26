@@ -8,12 +8,26 @@ var _ = require('lodash'),
 	animitter = require('animitter');
 
 module.exports = exports = function(fixtures) {
-	return animitter({ fps: 30, async: true }, function(frame, deltaTime, next) {
-		var n = _.after(fixtures.length, next);
+	var fps = 24;
 
-		fixtures.forEach(function(fixture) {
-			fixture.fixture.render(frame, deltaTime, n);
-		});
+	/**
+	 * Create the animation loop
+	 */
+	return animitter({ fps: fps, async: true }, function(frame, deltaTime, next) {
+		// Watch the fixtures changes
+		if(frame % fps == 0) {
+			fixtures.getChanges();
+		}
+	
+		if(fixtures.fixtures.length > 0) {
+			var n = _.after(fixtures.fixtures.length, next);
+
+			fixtures.fixtures.forEach(function(fixture) {
+				fixture.fixture.render(frame, deltaTime, n);
+			});
+		} else {
+			next();
+		}
 	});
 }
 
