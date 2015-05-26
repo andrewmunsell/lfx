@@ -73,7 +73,7 @@ DummyConnector.prototype.setLevel = function(level, startSource, endSource) {
 	this._dirty = true;
 
 	var start = startSource || 0;
-	var total = (endSource - startSource) || this._level.length;
+	var total = ((endSource || this._level.length) - start);
 
 	for(var i = start; i < total; i++) {
 		this._level[i] = level;
@@ -95,7 +95,7 @@ DummyConnector.prototype.setColor = function(color, startSource, endSource) {
 	this._dirty = true;
 
 	var start = startSource || 0;
-	var total = (endSource - startSource) || (this._buffer.length / 3);
+	var total = ((endSource || this._buffer.length / 3) - start);
 
 	for(var i = start; i < total; i++) {
 		this._buffer[i * 3] = color.r;
