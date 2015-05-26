@@ -7,5 +7,9 @@
 module.exports = {
 	'server': false,
 	'bind': '0.0.0.0',
-	'port': 80
+	'port': 80,
+
+	'fixtures': [
+		// Currently loaded fixtures
+	]
 };
