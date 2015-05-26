@@ -1,0 +1,125 @@
+/**
+ * @package lfx
+ * @author Andrew Munsell <andrew@wizardapps.net>
+ * @copyright 2015 Andrew Munsell
+ * @license http://www.gnu.org/licenses/ GNU GPLv3
+ */
+
+/**
+ * Constructor for the dummy connector
+ */
+var DummyConnector = function(options) {
+	this._buffer = new Array(options.count * 3);
+	this._level = new Array(options.count);
+
+	this._dirty = false;
+
+	this.setLevel(1);
+	this.setColor({
+		r: 0,
+		g: 0,
+		b: 0
+	});
+};
+
+/**
+ * Return the metadata for the connector
+ * @return {object}
+ */
+DummyConnector.metadata = function() {
+	return {
+		'name': 'Dummy Connector',
+		'description': 'Dummy connector that does not actually control anything. Used mainly for testing.',
+		'type': 'light',
+
+		'support': {
+			'source': 'multi',
+			'level': 'omni',
+			'color': 'omni'
+		}
+	};
+};
+
+/**
+ * Render the data into the fixture
+ * @param  {number} frame    
+ * @param  {number} deltaTime
+ * @param  {function} next
+ */
+DummyConnector.prototype.render = function(frame, deltaTime, next) {
+	if(this._dirty === true) {
+		// Copy the buffer and apply the levels to it
+		var level = this._level;
+
+		var buffer = this._buffer.map(function(b, i) {
+			return b * level[Math.floor(i / 3)];
+		});
+
+		console.log('Rendering to fixture:', buffer, 'Frame:', frame, 'dT:', deltaTime, 'ms');
+
+		this._dirty = false;
+	}
+
+	next();
+};
+
+/**
+ * Set the level of the fixture
+ * @param {number|boolean} level      
+ * @param {number} startSource
+ * @param {number} endSource  
+ */
+DummyConnector.prototype.setLevel = function(level, startSource, endSource) {
+	this._dirty = true;
+
+	var start = startSource || 0;
+	var total = (endSource - startSource) || this._level.length;
+
+	for(var i = start; i < total; i++) {
+		this._level[i] = level;
+	}
+};
+
+/**
+ * Set the color of the fixture, optionally from the specified starting source to ending source
+ * (inclusive, exclusive).
+ * @param {object} color      
+ * @param {number} startSource
+ * @param {number} endSource  
+ */
+DummyConnector.prototype.setColor = function(color, startSource, endSource) {
+	if(typeof(color.color) != 'undefined') {
+		throw new Error('This is an omnicolor fixture that cannot display named colors.');
+	}
+
+	this._dirty = true;
+
+	var start = startSource || 0;
+	var total = (endSource - startSource) || (this._buffer.length / 3);
+
+	for(var i = start; i < total; i++) {
+		this._buffer[i * 3] = color.r;
+		this._buffer[(i * 3) + 1] = color.g;
+		this._buffer[(i * 3) + 2] = color.b;
+	}
+};
+
+/**
+ * Set the animation for the fixture
+ * @param {string} animation Animation module name
+ */
+DummyConnector.prototype.setAnimation = function(animation) {
+	this._dirty = true;
+
+	throw new Error('The dummy connector cannot display animations.');
+};
+
+/**
+ * Get the current animation
+ * @return {object|null}
+ */
+DummyConnector.prototype.getAnimation = function() {
+	return this._animation || null;
+};
+
+module.exports = DummyConnector;

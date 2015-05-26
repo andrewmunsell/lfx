@@ -111,8 +111,9 @@ Fixture model metadata files should be in the following format, with the appropr
 		"level": "binary|multi|omni"
 	},
 	
-	"source": {
-		
+	"options": {
+		"connector": "./connectors/dummy.js",
+		"count": 0
 	}
 }
 ```
@@ -147,6 +148,46 @@ module.exports = Connector;
 
 The static method "metadata" should return an object with information about the connector.
 
-#### constructor(Object)
+#### `constructor(Object)`
 
-The connector constructor must take a single options object. This options object will contain 
+The connector constructor must take a single options object. The options will contain information about the fixture the connector controls, including the appropriate endpoints to connect to (e.g. the device for an SPI connector, or the IP address for a networked connector), the number of LEDs to control, and the ID of the fixture.
+
+#### `render(frame, deltaTime, next)`
+
+Render the LEDs for the specified frame and delta time in milliseconds since the last render. The next parameter indicates the callback that should be called when the frame is finished rendering.
+
+#### `setLevel(level[, sourceStart][, sourceEnd])`
+
+Sets the level of the fixture. If the fixture is a binary level fixture, any truthy value will be considered "on", while any falsey value will be considered "off". Multilevel fixtures define their own "level" values, while omnilevel fixtures will receive a floating point value from 0-1, inclusive.
+
+If source start and/or end parameters are specified, then the fixture's levels should be changed from the specified indicies (inclusive, exclusive).
+
+#### `setColor(color[, sourceStart][, sourceEnd])`
+
+Sets the color of the fixture. The color parameter must be an object in one of the following formats:
+
+```
+{
+	"r": 0, // Red value, from 0 to 255, inclusive
+	"g": 0, // Green value, from 0 to 255, inclusive
+	"b": 0 // Blue value, from 0 to 255, inclusive
+}
+```
+
+Or,
+
+```
+{
+	"color": "red" // Color value for a multicolor fixture
+}
+```
+
+The multicolor fixtures must describe what colors are supported in the static metadata method as previously described.
+
+#### `setAnimation(animation)`
+
+Sets the animation of the current fixture. The animation parameter will be a string corresponding to the name of the module for the animation.
+
+#### `getAnimation()`
+
+Gets the current animation instance set on the fixture, or null if no animation is currently set.
